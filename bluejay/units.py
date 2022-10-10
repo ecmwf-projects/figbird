@@ -27,7 +27,7 @@ def pretty_units(units):
     for unit in units_split:
         if len(unit)>0:
             if unit[0].isalpha() and unit[-1].isnumeric():
-                # find split point
+                # find split point between alphabetic and numeric parts
                 for i in range(len(unit)):
                     if not unit[i].isalpha():
                         break

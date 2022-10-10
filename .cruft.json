@@ -1,0 +1,17 @@
+{
+  "template": "https://github.com/ecmwf-projects/cookiecutter-conda-package",
+  "commit": "dad40538400e96c7d116f520692e7080174739a6",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "bluejay",
+      "project_slug": "bluejay",
+      "project_short_description": "Statistical plotting templates for climate applications",
+      "copyright_holder": "European Centre for Medium Range Weather Forecasts",
+      "copyright_year": "2022",
+      "mypy_strict": "False",
+      "_template": "https://github.com/ecmwf-projects/cookiecutter-conda-package"
+    }
+  },
+  "directory": null
+}

@@ -1,16 +1,5 @@
 PRETTY_UNITS = {
     "celsius": "°C",
-    "m s-1": "m s<sup>-1</sup>",
-    "m2 s-1": "m<sup>2</sup> s<sup>-1</sup>",
-    "m2 m-2": "m<sup>2</sup> m<sup>-2</sup>",
-    "m3 m-3": "m<sup>3</sup> m<sup>-3</sup>",
-    "w m-2": "W m<sup>-2</sup>",
-    "kg m-2": "kg m<sup>-2</sup>",
-    "kg m-3": "kg m<sup>-3</sup>",
-    "j m-2": "J m<sup>-2</sup>",
-    "kg m-2 s-1": "kg m<sup>-2</sup> s<sup>-1</sup>",
-    "n m-2": "N m<sup>-2</sup>",
-    "n m-2 s": "N m<sup>-2</sup> s",
 }
 
 
@@ -33,4 +22,17 @@ def pretty_units(units):
     >>> pretty_units("m s-1")
     "m s<sup>-1</sup>"
     """
+    units_split = units.split(' ')
+    units_join = []
+    for unit in units_split:
+        if len(unit)>0:
+            if unit[0].isalpha() and unit[-1].isnumeric():
+                # find split point
+                for i in range(len(unit)):
+                    if not unit[i].isalpha():
+                        break
+                units_join += [f'{unit[:i]}<sup>{unit[i:]}</sup>']
+            else:
+                units_join += [unit]
+    units = ' '.join(units_join)
     return PRETTY_UNITS.get(units, units)

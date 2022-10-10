@@ -1,5 +1,4 @@
 import collections.abc
-import contextlib
 
 
 class Schema(dict):
@@ -46,17 +45,8 @@ class Schema(dict):
             d[key] = value
         return d
 
-    @contextlib.contextmanager
     def set(self, **kwargs):
-        old_kwargs = {key: self.get(key) for key in kwargs}
-        new_kwargs = [kwarg for kwarg in kwargs if kwarg not in self]
-        self.update(**kwargs)
-        try:
-            yield
-        finally:
-            self.update(**old_kwargs)
-            for kwarg in new_kwargs:
-                self.pop(kwarg, None)
+        return _set(self, **kwargs)
 
     def get_magic(self, key):
         if key in self:
@@ -65,6 +55,22 @@ class Schema(dict):
             magic_key, *kwarg = key.split("_")
             if magic_key in self:
                 return self[magic_key]["_".join(kwarg)]
+
+
+class _set:
+    def __init__(self, schema, **kwargs):
+        self.schema = schema
+        self.old_kwargs = {key: self.schema.get(key) for key in kwargs}
+        self.new_kwargs = [key for key in kwargs if key not in self.schema]
+        self.schema.update(**kwargs)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.schema.update(**self.old_kwargs)
+        for key in self.new_kwargs:
+            self.schema.pop(key, None)
 
 
 def _recursive_dict_update(d, u):

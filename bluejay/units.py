@@ -1,5 +1,6 @@
 PRETTY_UNITS = {
     "celsius": "°C",
+    "degrees_celsius": "°C",
 }
 
 
@@ -31,8 +32,9 @@ def pretty_units(units):
                 for i in range(len(unit)):
                     if not unit[i].isalpha():
                         break
-                units_join += [f'{unit[:i]}<sup>{unit[i:]}</sup>']
+                u_a = PRETTY_UNITS.get(unit[:i].lower(), unit)
+                units_join += [f'{u_a}<sup>{unit[i:]}</sup>']
             else:
                 units_join += [unit]
-    units = ' '.join(units_join)
-    return PRETTY_UNITS.get(units, units)
+
+    return ' '.join(units_join)

@@ -1,12 +1,16 @@
+import warnings
+
 import teal
-from six import string_types
+import xarray as xr
+
+from .schema import schema
 
 
 class TealIncompatibility(Exception):
     pass
 
 
-def polymorphic_input(function):
+def polymorphic(function):
     def wrapper(data=None, *args, **kwargs):
         if data is not None:
             teal_data = teal.open(data)
@@ -28,7 +32,7 @@ def polymorphic_input(function):
 def numpy_input(data, *args, **kwargs):
     try:
         ndarray = data.to_numpy()
-    except:  # noqa: E722
+    except (ValueError, NotImplementedError):  # noqa: E722
         raise TealIncompatibility()
 
     x = kwargs.get("x")
@@ -54,60 +58,53 @@ def numpy_input(data, *args, **kwargs):
 
 def xarray_input(data, *args, **kwargs):
     try:
-        dataset = data.to_xarray().squeeze()
-    except:  # noqa: E722
+        dataset = xr.Dataset(data.to_xarray()).squeeze()
+    except (ValueError, NotImplementedError):  # noqa: E722
         raise TealIncompatibility()
 
-    x = kwargs.get("x")
-    y = kwargs.get("y")
+    dims = list(dataset.dims)
+    data_vars = list(dataset.data_vars)
 
-    if x is None or y is None:
-        n_dims = len(dataset.dims)
-        n_vars = len(dataset.data_vars)
-        if n_dims != 1:
-            raise ValueError(
-                f"data must have exactly 1 dimension, but found {n_dims}; "
-                f"either slice the data down to 1 dimension or pass the 'x' "
-                f"and 'y' arguments to select named dimensions/coordinates"
-            )
-        if n_vars != 1:
-            raise ValueError(
-                f"data must have exactly 1 data variable, but found {n_vars}; "
-                f"either slice the data down to 1 variable or pass the 'x' "
-                f"and 'y' arguments to select a variable"
-            )
+    if len(dims) != 1:
+        raise ValueError(
+            f"data must have exactly 1 dimension, but found {len(dims)}; "
+            f"please reduce the data down to 1 dimension"
+        )
 
-        if x is None and y is None:
-            x = dataset[list(dataset.dims)[0]].values
-            y = dataset[list(dataset.data_vars)[0]].values
-        elif x is None:
-            if isinstance(y, string_types) and y in dataset.dims:
-                x = dataset[list(dataset.data_vars)[0]].values
-                y = dataset[list(dataset.dims)[0]].values
+    done_axis = []
+    assigned_axes = [kwargs.get(ax) for ax in ("x", "y")]
+    var_kwargs = dict()
+    var_keys = dict()
+    for axis_name in ["x", "y"]:
+        axis = kwargs.get(axis_name)
+        if axis is None:
+            if dims[0] not in done_axis + assigned_axes:
+                var_kwargs[axis_name] = dataset[dims[0]].values
+                var_keys[axis_name] = dims[0]
+                done_axis += [dims[0]]
             else:
-                x = dataset[list(dataset.data_vars)[0]].values
-        elif y is None:
-            if isinstance(x, string_types) and x in dataset.dims:
-                y = dataset[list(dataset.data_vars)[0]].values
-                x = dataset[list(dataset.dims)[0]].values
-            else:
-                y = dataset[list(dataset.data_vars)[0]].values
+                data_var = data_vars[0]
+                if len(data_vars) > 1:
+                    warnings.warn(
+                        f"dataset contains more than one data variable; "
+                        f"variable '{data_var}' has been selected for plotting"
+                    )
+                var_keys[axis_name] = data_var
+                var_kwargs[axis_name] = dataset[data_var].values
+        else:
+            var_kwargs[axis_name] = dataset[axis].values
+            var_keys[axis_name] = axis
 
-    else:
-        x = search_for_facet(dataset, x, "x")
-        y = search_for_facet(dataset, y, "y")
-
-    var_kwargs = {"x": x, "y": y}
+    if schema.settings.auto_label_axes:
+        kwargs = _auto_label_axes(var_keys, kwargs)
 
     return args, {**kwargs, **var_kwargs}
 
 
-def search_for_facet(dataset, facet, facet_name):
-    if facet in dataset.dims:
-        result = dataset[facet].values
-    elif facet in dataset.data_vars:
-        result = dataset[facet].values
-    else:
-        facet_name = facet_name or facet
-        raise ValueError(f"unable to match {facet_name} value '{facet}' against data")
-    return result
+def _auto_label_axes(var_keys, kwargs):
+    kwargs.setdefault("_update_layout", dict())
+    for axis in var_keys:
+        axis_kwargs = kwargs.get("_update_layout", dict()).get(f"{axis}axis", dict())
+        axis_kwargs.setdefault("title", var_keys[axis])
+        kwargs["_update_layout"].setdefault(f"{axis}axis", axis_kwargs)
+    return kwargs

@@ -2,7 +2,14 @@ from datetime import datetime, timedelta
 
 from dateutil import relativedelta
 
-from . import figures, lines  # , titles
+from . import Figure, envelopes, plot
+from .schema import schema
+
+
+class CalendarFigure(Figure):
+    TRACE_MODULE = "calendar"
+    SCHEMA = schema.calendar
+
 
 SEASON_TO_INT = {
     "DJF": 1,
@@ -16,7 +23,8 @@ MONTH_CENTRES = [16, 14, 16, 15, 16, 15, 16, 16, 15, 16, 15, 16]
 MONTH_HOURS = [0, 12, 0, 12, 0, 12, 0, 0, 12, 0, 12, 0]
 
 
-def _get_climatology_axes(data):
+def _get_calendar_axes(data):
+    data = data.to_array().squeeze()
     frequencies = {
         "month": _month_axes,
         "dayofyear": _day_axes,
@@ -80,16 +88,18 @@ def _season_axes(data, x_dim="season"):
 def _auto_hovertemplate(data):
     templates = {
         "month": lambda: {
-            "hovertemplate": "%{y}<extra>%{x|%B}</extra>",
+            "hovertemplate": f"%{{y:{schema.settings.hoverprecision}}}<extra>%{{x|%B}}</extra>",
         },
         "dayofyear": lambda: {
-            "hovertemplate": "%{y}<extra>%{x|%-d %B}</extra>",
+            "hovertemplate": f"%{{y:{schema.settings.hoverprecision}}}<extra>%{{x|%-d %B}}</extra>",
         },
         "weekofyear": lambda: {
             "customdata": [
-                date - timedelta(days=3.5) for date in _get_climatology_axes(data)[0]
+                date - timedelta(days=3.5) for date in _get_calendar_axes(data)[0]
             ],
-            "hovertemplate": "%{y}<extra>w/c %{customdata|%-d %B}</extra>",
+            "hovertemplate": (
+                f"%{{y:{schema.settings.hoverprecision}}}<extra>w/c %{{customdata|%-d %B}}</extra>"
+            ),
         },
         "season": lambda: {
             "customdata": [
@@ -100,7 +110,7 @@ def _auto_hovertemplate(data):
                 "Autumn (SON)",
                 "Winter (DJF)",
             ],
-            "hovertemplate": "%{y}<extra>%{customdata}</extra>",
+            "hovertemplate": f"%{{y:{schema.settings.hoverprecision}}}<extra>%{{customdata}}</extra>",
         },
     }
     for dim in data.dims:
@@ -109,66 +119,20 @@ def _auto_hovertemplate(data):
             return templates[frequency]()
 
 
-def figure(*args, **kwargs):
-    kwargs.update(
-        layout={
-            "xaxis": {
-                "zeroline": False,
-                "showline": True,
-                "showgrid": True,
-                "gridwidth": 1,
-                "gridcolor": "#EEEEEE",
-                "fixedrange": True,
-                "ticklabelmode": "period",
-                "tickformat": "%B",
-                "dtick": "M1",
-                "range": ["0002-01-01 00:00:00", "0002-12-31 00:00:00"],
-            },
-            "yaxis": {
-                "zeroline": False,
-                "showline": True,
-                "showgrid": False,
-            },
-            "hovermode": "x",
-            "hoverdistance": -1,
-        },
-    )
-    return figures.figure(*args, **kwargs)
-
-
-def line(data, fig=None, **kwargs):
-    if fig is None:
-        fig = figure()
-
-    # fig.layout.yaxis.title = titles.yaxis_title(data)
-
-    x, y = _get_climatology_axes(data)
-
-    hovertemplate = dict()
-    if all(k not in kwargs for k in ["hovertemplate", "hoverinfo"]):
-        hovertemplate = _auto_hovertemplate(data)
-
-    fig.add_trace(lines.line(x=x, y=y, **hovertemplate, **kwargs))
+@CalendarFigure.create_if_none
+def line(data, *args, fig=None, **kwargs):
+    x, y = _get_calendar_axes(data)
+    plot.line(*args, x=x, y=y, fig=fig, **kwargs)
     return fig
 
 
-def envelope(data, envelope_dim=None, fig=None, **kwargs):
-    if fig is None:
-        fig = figure()
+@CalendarFigure.create_if_none
+def envelope(data, envelope_dim=None, *args, fig=None, **kwargs):
     if not isinstance(data, (list, tuple)):
-        data = lines._split_envelope(data, envelope_dim)
-
-    # fig.layout.yaxis.title = titles.yaxis_title(data[0])
-
+        data = envelopes._split_envelope(data, envelope_dim)
     y_values = []
     for item in data:
-        x, y = _get_climatology_axes(item)
+        x, y = _get_calendar_axes(item)
         y_values.append(y)
-
-    hovertemplate = dict()
-    if all(k not in kwargs for k in ["hovertemplate", "hoverinfo"]):
-        hovertemplate = _auto_hovertemplate(data[0])
-
-    for trace in lines.envelope(y_values, x=x, **hovertemplate, **kwargs):
-        fig.add_trace(trace)
+    envelopes.envelope(y_values, *args, x=x, fig=fig, **kwargs)
     return fig

@@ -14,10 +14,10 @@ def _auto_trace(module_name=None):
             kwargs["fig"] = fig
             if module_name is None:
                 module = importlib.import_module(
-                    f"bluejay2.{fig.__class__.TRACE_MODULE}"
+                    f"bluejay.{fig.__class__.TRACE_MODULE}"
                 )
             else:
-                module = importlib.import_module(f"bluejay2.{module_name}")
+                module = importlib.import_module(f"bluejay.{module_name}")
 
             getattr(module, name)(*args, **kwargs)
             return fig

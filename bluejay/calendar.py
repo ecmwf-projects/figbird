@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from dateutil import relativedelta
 
-from . import Figure, envelopes, plot
+from . import Figure
 from .schema import schema
 
 
@@ -121,6 +121,8 @@ def _auto_hovertemplate(data):
 
 @CalendarFigure.create_if_none
 def line(data, *args, fig=None, **kwargs):
+    from . import plot
+
     x, y = _get_calendar_axes(data)
     plot.line(*args, x=x, y=y, fig=fig, **kwargs)
     return fig
@@ -128,6 +130,8 @@ def line(data, *args, fig=None, **kwargs):
 
 @CalendarFigure.create_if_none
 def envelope(data, envelope_dim=None, *args, fig=None, **kwargs):
+    from . import envelopes
+
     if not isinstance(data, (list, tuple)):
         data = envelopes._split_envelope(data, envelope_dim)
     y_values = []

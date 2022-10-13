@@ -4,7 +4,6 @@ from .schema import schema
 
 @Figure.create_if_none
 @schema.envelope.apply()
-# @inputs.polymorphic
 def envelope(
     data,
     fig=None,

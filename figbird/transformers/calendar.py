@@ -30,14 +30,6 @@ MONTH_MIDPOINTS = {
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
-def str_to_datetime(string, format=DATETIME_FORMAT):
-    return datetime.strptime(string, format)
-
-
-def datetime_to_str(dt, format=DATETIME_FORMAT):
-    return dt.strftime(format)
-
-
 def season_to_datetime(season, year=DUMMY_YEAR):
     superstring = SEASON_INITIALS * 2
     if season not in superstring:

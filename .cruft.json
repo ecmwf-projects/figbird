@@ -4,8 +4,8 @@
   "checkout": null,
   "context": {
     "cookiecutter": {
-      "project_name": "bluejay",
-      "project_slug": "bluejay",
+      "project_name": "figbird",
+      "project_slug": "figbird",
       "project_short_description": "Statistical plotting templates for climate applications",
       "copyright_holder": "European Centre for Medium Range Weather Forecasts",
       "copyright_year": "2022",

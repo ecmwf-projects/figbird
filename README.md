@@ -1,11 +1,11 @@
-# bluejay
+# figbird
 
 Statistical plotting templates for climate applications
 
 ## Quick Start
 
 ```python
->>> import bluejay
+>>> import figbird
 
 ```
 

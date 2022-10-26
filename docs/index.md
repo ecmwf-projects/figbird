@@ -1,4 +1,4 @@
-# Welcome to bluejay's documentation!
+# Welcome to figbird's documentation!
 
 Statistical plotting templates for climate applications.
 
@@ -6,7 +6,7 @@ Statistical plotting templates for climate applications.
 :caption: 'Contents:'
 :maxdepth: 2
 
-API Reference <_api/bluejay/index>
+API Reference <_api/figbird/index>
 ```
 
 # Indices and tables

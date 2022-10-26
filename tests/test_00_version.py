@@ -1,5 +1,5 @@
-import bluejay
+import figbird
 
 
 def test_version() -> None:
-    assert bluejay.__version__ != "999"
+    assert figbird.__version__ != "999"

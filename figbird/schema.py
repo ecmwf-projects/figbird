@@ -1,8 +1,6 @@
 import collections.abc
 from string import Formatter
 
-from six import string_types
-
 
 class Schema(dict):
     def __init__(self, **kwargs):
@@ -79,7 +77,7 @@ class Schema(dict):
         return self[magic_key], kwarg
 
     def _format_string(self, value):
-        if isinstance(value, string_types) and "{" in value:
+        if isinstance(value, str) and "{" in value:
             keys = [i[1] for i in Formatter().parse(value) if i[1] is not None]
 
             format_keys = dict()
@@ -149,57 +147,62 @@ schema = Schema(
                 "marker_threshold": 60,
             },
             "auto_label_axes": True,
-            "hovertemplate": "%{{y:{settings.hoverprecision}}}<extra></extra>",
+            "hovertemplate": "%{{{{{{axis}}:{settings.hoverprecision}}}}}",
         },
-        "figure": {
-            "layout": {
-                "plot_bgcolor": "white",
-                "xaxis": {
-                    "zeroline": False,
-                    "showline": False,
-                    "showgrid": True,
-                    "gridwidth": 1,
-                    "gridcolor": "#EEEEEE",
+        "figures": {
+            "stripes": {
+                "layout": {
+                    "xaxis": {
+                        "visible": False,
+                    },
+                    "yaxis": {
+                        "visible": False,
+                    },
+                    "height": 300,
+                    "margin": {"l": 0, "r": 0, "t": 0, "b": 0},
                 },
-                "yaxis": {
-                    "zeroline": False,
-                    "showline": True,
-                    "linecolor": "black",
-                    "showgrid": False,
+            },
+            "figure": {
+                "layout": {
+                    "plot_bgcolor": "white",
+                    "xaxis": {
+                        "zeroline": False,
+                        "showline": False,
+                        "showgrid": True,
+                        "gridwidth": 1,
+                        "gridcolor": "#EEEEEE",
+                    },
+                    "yaxis": {
+                        "zeroline": False,
+                        "showline": True,
+                        "linecolor": "black",
+                        "showgrid": False,
+                    },
+                    "colorway": [
+                        "#636EFA",
+                        "#EF553B",
+                        "#00CC96",
+                        "#AB63FA",
+                        "#FFA15A",
+                        "#19D3F3",
+                        "#FF6692",
+                        "#B6E880",
+                        "#FF97FF",
+                        "#FECB52",
+                    ],
+                    "hovermode": "x",
                 },
-                "hovermode": "x",
             },
         },
         "calendar": {
-            "layout": {
-                "plot_bgcolor": "white",
-                "xaxis": {
-                    "zeroline": False,
-                    "showline": False,
-                    "showgrid": True,
-                    "gridwidth": 1,
-                    "gridcolor": "#EEEEEE",
-                    "fixedrange": True,
-                    "ticklabelmode": "period",
-                    "tickformat": "%B",
-                    "dtick": "M1",
-                    "range": ["0002-01-01 00:00:00", "0002-12-31 00:00:00"],
-                },
-                "yaxis": {
-                    "zeroline": False,
-                    "showline": True,
-                    "linecolor": "black",
-                    "showgrid": False,
-                },
-                "hovermode": "x",
-                "hoverdistance": -1,
-            },
+            "hovertemplate": "{settings.hovertemplate}",
         },
         "line": {
             "line": {
                 "width": 2,
                 "shape": "linear",
             },
+            "mode": "lines",
             "hovertemplate": "{settings.hovertemplate}",
             "marker": {
                 "size": 6,
@@ -207,13 +210,17 @@ schema = Schema(
                 "line_color": "white",
             },
         },
+        "scatter": {
+            "mode": "markers",
+            "hovertemplate": "{settings.hovertemplate}",
+        },
+        "bar": {},
         "stripes": {
             "showscale": False,
-            "hovertemplate": "%{{x}}: %{{y:{settings.hoverprecision}}}",
+            "hovertemplate": "%{{x}}: %{{z:{settings.hoverprecision}}}<extra></extra>",
         },
         "envelope": {
             "line": {
-                "width": 0,
                 "shape": "{line.line.shape}",
             },
             "hovertemplate": "{line.hovertemplate}",

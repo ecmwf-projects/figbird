@@ -1,4 +1,4 @@
-PROJECT := bluejay
+PROJECT := figbird
 CONDA := conda
 CONDAFLAGS :=
 COV_REPORT := html

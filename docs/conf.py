@@ -9,17 +9,17 @@
 import os
 import sys
 
-import bluejay
+import figbird
 
 sys.path.insert(0, os.path.abspath("../"))
 
 # -- Project information -----------------------------------------------------
 
-project = "bluejay"
+project = "figbird"
 copyright = "2022, European Centre for Medium Range Weather Forecasts"
 author = "European Centre for Medium Range Weather Forecasts"
-version = bluejay.__version__
-release = bluejay.__version__
+version = figbird.__version__
+release = figbird.__version__
 
 # -- General configuration ---------------------------------------------------
 
@@ -37,7 +37,7 @@ extensions = [
 autodoc_typehints = "none"
 
 # autoapi configuration
-autoapi_dirs = ["../bluejay"]
+autoapi_dirs = ["../figbird"]
 autoapi_ignore = ["*/version.py"]
 autoapi_options = [
     "members",

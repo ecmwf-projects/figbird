@@ -147,7 +147,7 @@ schema = Schema(
                 "marker_threshold": 60,
             },
             "auto_label_axes": True,
-            "hovertemplate": "%{{{{{{axis}}:{settings.hoverprecision}}}}}",
+            "hovertemplate": "%{{{{{{axis}}:{settings.hoverprecision}}}}}%{{{{{{axis}}units}}}}",
         },
         "figures": {
             "stripes": {

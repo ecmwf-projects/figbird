@@ -15,7 +15,7 @@ def test_season_to_datetime():
     assert calendar.season_to_datetime("JFM", 2022) == datetime(2022, 2, 14, 0)
 
 
-def test_month():
+def test_month_12_months():
     year = calendar.DUMMY_YEAR
     assert np.array_equal(
         list(calendar.month([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])),
@@ -34,6 +34,10 @@ def test_month():
             datetime(year, 12, 16, 12),
         ],
     )
+
+
+def test_month_missing_months():
+    year = calendar.DUMMY_YEAR
     assert np.array_equal(
         list(calendar.month([4, 6, 9, 10])),
         [
@@ -45,7 +49,7 @@ def test_month():
     )
 
 
-def test_month_cyclic():
+def test_month_cyclic_12_months():
     year = calendar.DUMMY_YEAR
     assert np.array_equal(
         list(calendar.month([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], cyclic=True)),
@@ -66,6 +70,10 @@ def test_month_cyclic():
             datetime(year + 1, 1, 16, 12),
         ],
     )
+
+
+def test_month_cyclic_missing_months():
+    year = calendar.DUMMY_YEAR
     with pytest.warns(UserWarning):
         assert np.array_equal(
             list(calendar.month([4, 6, 9, 10], cyclic=True)),

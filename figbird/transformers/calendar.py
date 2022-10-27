@@ -1,3 +1,14 @@
+"""
+Module for transforming arrays of calendar-related information into datetimes.
+
+For the purposes of figbird, the term "calendar" refers to a "typical" year,
+i.e. seasons, months, weeks and/or days of the year **in the general sense**,
+rather than specific seasons, months etc. from a given year.
+
+Common applications for calendar-related data include climatology plots (climate
+information aggregated over a series of years).
+"""
+
 import warnings
 from datetime import datetime, timedelta
 
@@ -5,9 +16,8 @@ from dateutil.relativedelta import relativedelta
 
 from ..schema import schema
 
-SEASON_INITIALS = "JFMAMJJASOND"
-
-
+#: Since datetime has no support for a "generic" year, we must explicitly set a
+#: "dummy" year to be used for all calendar datetimes.
 DUMMY_YEAR = 2
 
 
@@ -31,7 +41,7 @@ DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 def season_to_datetime(season, year=DUMMY_YEAR):
-    superstring = SEASON_INITIALS * 2
+    superstring = "JFMAMJJASOND" * 2
     if season not in superstring:
         raise ValueError(f"invalid season '{season}'")
 

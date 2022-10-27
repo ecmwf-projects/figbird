@@ -71,6 +71,10 @@ def xarray(self, data, args, kwargs):
                 if "{axis}" in hovertemplate:
                     kwargs["hovertemplate"] = hovertemplate.format(axis=axis)
 
+        if f"%{{{axis}units}}" in kwargs.get("hovertemplate"):
+            kwargs["hovertemplate"] = kwargs["hovertemplate"].replace(
+                f"%{{{axis}units}}", metadata.get_units(dataset, attr) or ""
+            )
         kwargs[axis] = dataset[attr].values
         axis_attrs[axis] = attr
         if transformer is not None:

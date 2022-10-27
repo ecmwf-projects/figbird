@@ -10,7 +10,7 @@ LABEL_PREFERENCE = [
 def get_axis_title(data, attr=None):
     title = get_label(data, attr) or str()
     units = get_units(data, attr)
-    if units is not None:
+    if units:
         title = f"{title} ({units})"
     return title
 
@@ -30,7 +30,7 @@ def get_label(data, attr=None):
 
 
 def get_units(data, attr=None):
-    units = None
+    units = ""
     if attr is not None:
         data = data[attr]
     try:

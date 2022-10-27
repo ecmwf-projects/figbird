@@ -11,10 +11,8 @@ dependencies:
 - sphinx
 - sphinx-autoapi
 # DO NOT EDIT ABOVE THIS LINE, ADD DEPENDENCIES BELOW
-- python-dateutil
-- plotly
+- emohawk
 - numpy
-- six
-- num2words
-- pip:
-  - git+https://github.com/ecmwf-projects/teal
+- plotly
+- python-dateutil
+- xarray

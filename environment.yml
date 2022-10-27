@@ -11,8 +11,9 @@ dependencies:
 - sphinx
 - sphinx-autoapi
 # DO NOT EDIT ABOVE THIS LINE, ADD DEPENDENCIES BELOW
-- emohawk
 - numpy
 - plotly
 - python-dateutil
 - xarray
+- pip:
+  - emohawk
